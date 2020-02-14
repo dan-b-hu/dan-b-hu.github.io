@@ -1,1 +1,95 @@
-Hi
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Waves 👋</title>
+  <style>
+    body{
+      background: #001929;
+      padding: 0;
+      margin: 0;
+    }
+
+    polyline {
+    /*   animation: 7s wavey infinite; */
+    }
+
+    @keyframes wavey {
+      from {
+        stroke-dasharray: 0;
+      }
+      to {
+        stroke-dasharray: 1;
+      }
+    }
+  </style>
+</head>
+<body id="drawing">
+</body>
+<script>
+  const width = 800
+  const height = 800
+
+  const ns = 'http://www.w3.org/2000/svg'
+  const div = document.getElementById('drawing')
+  const svg = document.createElementNS(ns, 'svg')
+  svg.setAttributeNS(null, 'width', '100%')
+  svg.setAttributeNS(null, 'height', '100%')
+  svg.setAttributeNS(null, 'viewBox', `0 0 ${width} ${height}`)
+  div.appendChild(svg)
+
+  class Wave {
+    constructor(width) {
+      this.width = width
+      this.el = document.createElementNS(ns, 'polyline')
+      this.el.setAttributeNS(null, 'stroke-width', 2)
+      svg.appendChild(this.el)
+      this.create()
+    }
+
+    create() {
+      this.x1 = Math.random() * this.width
+      this.y1 = Math.random() * height
+      this.x3 = Math.random() * this.width
+      this.y3 = this.y1
+      this.x2 = Math.random() * this.width
+      this.y2 = this.y1 - 1
+    }
+
+    get draw() {
+      return `${this.x1},${this.y1} ${this.x2},${this.y2} ${this.x3},${this.y3}`
+    }
+
+    update () {
+      this.x1 = this.x1 + (Math.random() - 0.5) * 5
+      this.y1 = this.y1 + Math.random() * 1
+      this.x2 = this.x2 + (Math.random() - 0.5) * 5
+      this.y2 = this.y2 + Math.random() * 1
+      this.x3 = this.x3 + (Math.random() - 0.5) * 5
+      this.y3 = this.y3 + Math.random() * 1
+      this.el.setAttributeNS(null, 'points', this.draw)
+      const distance = this.y2 / height
+      this.opacity = Math.floor(distance * (99 - 11) / 1 + 11)
+      this.el.setAttributeNS(null, 'fill', `#dfefff${this.opacity}`)
+      this.el.setAttributeNS(null, 'stroke', `#ccddee${this.opacity}`)
+      this.reset()
+    }
+
+    reset() {
+      if (this.y2 > height) this.create()
+    }
+  }
+
+  const waves = []
+
+  for(let i = 0; i < 100; i++) {
+    waves[i] = new Wave(width)
+  }
+
+  function loop () {
+    waves.forEach(wave => wave.update())
+  }
+
+  setInterval(loop, 100)
+</script>
+</html>
